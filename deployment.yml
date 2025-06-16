@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-aks-blob-connect-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-aks-blob-connect-deployment
+  template:
+    metadata:
+      labels:
+        app: python-aks-blob-connect-deployment
+      annotations:
+        azure.workload.identity/use: "true" # Required. Only pods with this label can use workload identity.
+    spec:
+      serviceAccountName: azure-access-managed-identity-sa # 👈 This binds the pod to the MI
+      containers:
+        - name: python-aks-blob-connect-container
+          image: prasadreddy2349/aks-python-azure-blob-reader
+          imagePullPolicy: Always
+          # command: ["sleep", "3600"]
+          env:
+            - name: AZURE_STORAGE_ACCOUNT_NAME
+              value: demoakstgacc123 # Replace with your Azure Storage Account name
+            - name: AZURE_STORAGE_CONTAINER_NAME
+              value: test-container # Replace with your Azure Storage Container name
+          resources: # Optional resource requests and limits
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+          volumeMounts:
+            - name: azure-token
+              mountPath: /var/run/secrets/azure/tokens
+              readOnly: true
+      volumes:
+        - name: azure-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  audience: api://24a568b2-d4c8-4fc8-9ee1-3b099ea75fea # replace with managed identity client ID
+                  expirationSeconds: 3600
+                  path: azure-identity-token

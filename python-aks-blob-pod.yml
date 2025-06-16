@@ -8,7 +8,7 @@ metadata:
   labels:
     azure.workload.identity/use: "true" # Required. Only pods with this label can use workload identity.
 spec:
-  serviceAccountName: azure-access-managed-identity-sa
+  serviceAccountName: azure-access-managed-identity-sa # This binds the pod to the MI
   containers:
     - name: python-blob-container
       image: prasadreddy2349/aks-python-azure-blob-reader
