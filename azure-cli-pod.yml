@@ -1,0 +1,15 @@
+# Working code. Need to use az login --federated-token "$(cat $AZURE_FEDERATED_TOKEN_FILE)" --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID to login to Azure using the federated token
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: azure-cli-pod
+  namespace: default
+  labels:
+    azure.workload.identity/use: "true" # Required. Only pods with this label can use workload identity.
+spec:
+  serviceAccountName: azure-access-managed-identity-sa
+  containers:
+    - image: mcr.microsoft.com/azure-cli
+      name: azcli
+      command: ["sleep", "3600"]

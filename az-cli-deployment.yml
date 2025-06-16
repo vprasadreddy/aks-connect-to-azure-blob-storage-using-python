@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: az-cli-deployment
+  namespace: default
+  labels:
+    azure.workload.identity/use: "true" # Required. Only pods with this label can use workload identity.
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: az-cli-deployment
+  template:
+    metadata:
+      labels:
+        app: az-cli-deployment
+    spec:
+      serviceAccountName: azure-access-managed-identity-sa
+      containers:
+        - name: reader
+          image: mcr.microsoft.com/azure-cli # or your app image
+          command: ["sleep"]
+          args: ["3600"]
