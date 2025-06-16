@@ -13,7 +13,7 @@ spec:
       labels:
         app: python-aks-blob-connect-deployment
     spec:
-      serviceAccountName: azure-access-managed-identity-sa # 👈 This binds the pod to the MI
+      serviceAccountName: azure-access-managed-identity-sa #This binds the pod to the MI
       containers:
         - name: python-aks-blob-connect-container
           image: prasadreddy2349/aks-python-azure-blob-reader

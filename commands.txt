@@ -1,6 +1,6 @@
 env | grep -i azure
 
-kubectl exec -it blob-reader-644798db69-v6lv7 -- /bin/bash  
+kubectl exec -it az-cli-deployment-747dcc5844-ncjpf -- /bin/bash  
 
 az login --federated-token "$(cat $AZURE_FEDERATED_TOKEN_FILE)" --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID
 
