@@ -1,0 +1,14 @@
+# This YAML file defines a Kubernetes Pod that uses a managed identity to access Azure Blob Storage.
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: python-blob-pod
+  namespace: default
+  labels:
+    azure.workload.identity/use: "true" # Required. Only pods with this label can use workload identity.
+spec:
+  serviceAccountName: azure-access-managed-identity-sa
+  containers:
+    - image: prasadreddy2349/aks-python-azure-blob-reader
+      name: python-blob-container

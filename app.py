@@ -6,8 +6,8 @@ import os
 # STORAGE_ACCOUNT_NAME = os.getenv("AZURE_STORAGE_ACCOUNT_NAME")
 # CONTAINER_NAME = os.getenv("AZURE_STORAGE_CONTAINER_NAME")
 
-STORAGE_ACCOUNT_NAME = "demoakstgacc123"
-CONTAINER_NAME = "test-container"
+STORAGE_ACCOUNT_NAME = "storageaccount123" # Replace with your storage account name
+CONTAINER_NAME = "demo-container" # Replace with your container name
 
 # Construct the storage account URL
 account_url = f"https://{STORAGE_ACCOUNT_NAME}.blob.core.windows.net"
