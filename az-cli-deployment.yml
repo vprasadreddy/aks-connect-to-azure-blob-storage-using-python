@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: az-cli-deployment
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -11,8 +12,9 @@ spec:
     metadata:
       labels:
         app: az-cli-deployment
+        azure.workload.identity/use: "true"
     spec:
-      serviceAccountName: blob-access-sa
+      serviceAccountName: azure-access-managed-identity-sa
       containers:
         - name: azcli
           image: mcr.microsoft.com/azure-cli
