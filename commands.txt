@@ -1,6 +1,10 @@
 env | grep -i azure
 
-kubectl exec -it az-cli-deployment-747dcc5844-ncjpf -- /bin/bash  
+kubectl exec -it aazure-cli-pod -- /bin/bash  
+
+kubectl scale deployment az-cli-deployment --replicas=0
+
+az login --identity
 
 az login --federated-token "$(cat $AZURE_FEDERATED_TOKEN_FILE)" --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID
 
