@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-aks-blob-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-aks-blob-deployment
+  template:
+    metadata:
+      labels:
+        app: python-aks-blob-deployment
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: azure-access-managed-identity-sa
+      containers:
+        - name: python-aks-blob-container
+          image: prasadreddy2349/aks-python-azure-blob-reader
+          env:
+            - name: AZURE_STORAGE_ACCOUNT_NAME
+              value: demoakstgacc123 # Replace with your Azure Storage Account name
+            - name: AZURE_STORAGE_CONTAINER_NAME
+              value: test-container # Replace with your Azure Storage Container name

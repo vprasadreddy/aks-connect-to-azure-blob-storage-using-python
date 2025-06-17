@@ -1,25 +1,19 @@
-apiVersion: apps/v1
-kind: Deployment
+# Working code. Need to use az login --federated-token "$(cat $AZURE_FEDERATED_TOKEN_FILE)" --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID to login to Azure using the federated token
+---
+apiVersion: v1
+kind: Pod
 metadata:
-  name: az-cli-deployment
+  name: python-aks-blob-pod
   namespace: default
+  labels:
+    azure.workload.identity/use: "true" # Required. Only pods with this label can use workload identity.
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: az-cli-deployment
-  template:
-    metadata:
-      labels:
-        app: az-cli-deployment
-        azure.workload.identity/use: "true"
-    spec:
-      serviceAccountName: azure-access-managed-identity-sa
-      containers:
-        - name: python-blob-container
-          image: prasadreddy2349/aks-python-azure-blob-reader
-          env:
-            - name: AZURE_STORAGE_ACCOUNT_NAME
-              value: demoakstgacc123 # Replace with your Azure Storage Account name
-            - name: AZURE_STORAGE_CONTAINER_NAME
-              value: test-container # Replace with your Azure Storage Container name
+  serviceAccountName: azure-access-managed-identity-sa
+  containers:
+    - name: python-aks-blob-container
+      image: prasadreddy2349/aks-python-azure-blob-reader
+      env:
+        - name: AZURE_STORAGE_ACCOUNT_NAME
+          value: demoakstgacc123 # Replace with your Azure Storage Account name
+        - name: AZURE_STORAGE_CONTAINER_NAME
+          value: test-container # Replace with your Azure Storage Container name
