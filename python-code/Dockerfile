@@ -13,7 +13,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy source code
-COPY . .
+COPY . /app
 
 # Run the app
 CMD ["python", "-u", "app.py"]

@@ -5,11 +5,21 @@ az identity federated-credential create --name "azure-access-managed-identity-fe
 
 env | grep -i azure
 
+kubectl get pods
+
+kubectl logs pod_name
+
 kubectl exec -it az-cli-deployment-7dfdd5987d-bb7fq -- /bin/bash  
 
 kubectl exec -it az-cli-deployment-7dfdd5987d-hv56j -- sh
 
 kubectl scale deployment az-cli-deployment --replicas=0
+
+kubectl apply -f python-aks-blob-deployment.yml
+
+kubectl scale deployment python-aks-blob-deployment --replicas=0
+
+kubectl delete deployment python-aks-blob-deployment
 
 az login --identity
 

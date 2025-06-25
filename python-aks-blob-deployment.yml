@@ -23,3 +23,10 @@ spec:
               value: demoakstgacc123 # Replace with your Azure Storage Account name
             - name: AZURE_STORAGE_CONTAINER_NAME
               value: test-container # Replace with your Azure Storage Container name
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
