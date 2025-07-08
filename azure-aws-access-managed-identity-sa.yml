@@ -1,0 +1,9 @@
+# This file defines a Kubernetes ServiceAccount that uses Azure Workload Identity
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: azure-aws-access-managed-identity-sa
+  namespace: default
+  annotations:
+    azure.workload.identity/client-id: d9c26c95-c3e2-4d64-a0d3-f8df1e2fa13f # Replace with your Azure Managed Identity client ID
+    # azure.workload.identity/tenant-id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # Replace with your Azure tenant ID

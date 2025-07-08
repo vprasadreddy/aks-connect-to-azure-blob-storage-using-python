@@ -1,3 +1,5 @@
+docker buildx build --platform linux/amd64 -t prasadreddy2349/aks-python-azure-blob-reader --push --no-cache .
+
 az aks show --resource-group aks-rg --name demo-aks --query "oidcIssuerProfile.issuerUrl" -o tsv
 
 
@@ -26,3 +28,72 @@ az login --identity
 az login --federated-token "$(cat $AZURE_FEDERATED_TOKEN_FILE)" --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID
 
 az storage blob list --account-name demoakstgacc123 --container-name test-container --output table --auth-mode login
+
+
+Create the OIDC Identity Provider in AWS
+
+aws iam create-open-id-connect-provider \
+  --url https://oidc.prod-aks.azure.com/<cluster-guid> \
+  --client-id-list api://AzureADTokenExchange \
+  --thumbprint-list <THUMBPRINT_FROM_ABOVE>
+
+
+Now Create the IAM Role via AWS Console or CLI
+
+AWS Console > IAM > Roles > Create Role
+
+Trusted entity type: Web Identity
+
+Identity Provider: Select the AKS OIDC provider you created
+
+Audience: api://AzureADTokenExchange
+
+Then:
+
+Add a Condition with the sub value (matches Azure identity):
+
+"Condition": {
+  "StringEquals": {
+    "oidc.prod-aks.azure.com/<cluster-guid>:sub": "system:serviceaccount:<namespace>:<serviceaccount>"
+  }
+}
+
+Then attach your S3 permissions (e.g., AmazonS3ReadOnlyAccess), and create the role.
+
+kubectl exec -it aws-cli-test -- env | grep AWS_
+
+"Condition": {
+  "StringEquals": {
+    "oidc.prod-aks.azure.com/abcd1234:sub": "system:serviceaccount:default:s3-access-sa"
+  }
+}
+
+kubectl exec -it aks-pod-to-s3-access -n default -- aws sts get-caller-identity
+
+
+kubectl logs aks-pod-to-s3-access -n default
+
+kubectl exec -it aks-pod-to-s3-access -n default -- env | grep AWS_
+
+kubectl exec -it aks-pod-to-s3-access -n default -- sh
+
+//Verify AWS Identity
+aws sts get-caller-identity
+
+aws s3 ls
+
+aws s3 ls s3://test-s3-bucket-access-from-aks-pod --recursive
+
+
+kubectl exec -it aks-pod-to-s3-access-using-app-reg -n default -- sh
+
+aws sts assume-role-with-web-identity --role-arn arn:aws:iam::aws_account_number:role/aws_role --role-session-name aks-session --web-identity-token "$(cat $AZURE_FEDERATED_TOKEN_FILE)"
+
+
+Check the environment variables
+echo $AWS_ROLE_ARN
+echo $AWS_WEB_IDENTITY_TOKEN_FILE
+
+Check if the token file exists and has content
+ls -l /var/run/secrets/azure/tokens/
+cat /var/run/secrets/azure/tokens/azure-identity-token | head -n 3
