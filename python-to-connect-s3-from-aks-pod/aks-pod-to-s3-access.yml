@@ -1,15 +1,16 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: python-to-connect-s3-from-aks-pod
+  name: aks-pod-to-s3-access
   namespace: default
   labels:
     azure.workload.identity/use: "true" # Required for workload identity
 spec:
-  serviceAccountName: azure-aws-access-managed-identity-sa
+  serviceAccountName: azure-access-managed-identity-sa
   containers:
-    - name: python-s3
-      image: prasadreddy2349/read-s3-from-aks-pod-using-python
+    - name: aws-cli
+      image: amazon/aws-cli
+      command: ["sh", "-c", "aws sts get-caller-identity && sleep 604800"]
       env:
         - name: AWS_ROLE_ARN
           value: "arn:aws:iam::AWS_ACCOUNT_ID:role/AWS Role ARN"
