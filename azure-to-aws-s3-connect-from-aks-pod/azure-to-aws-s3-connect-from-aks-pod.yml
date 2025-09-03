@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: azure-to-aws-s3-connect-from-aks-pod
+  namespace: default
+  labels:
+    azure.workload.identity/use: "true" # Required for workload identity
+spec:
+  serviceAccountName: azure-aws-access-managed-identity-sa
+  containers:
+    - name: python-s3
+      image: prasadreddy2349/read-s3-from-aks-pod-using-python
+      env:
+        - name: AWS_ROLE_ARN
+          value: "arn:aws:iam::AWS_ACCOUNT_ID:role/AWS Role ARN"
+          # Replace AWS_ACCOUNT_ID with your actual AWS account ID
+          # Replace AWS Role ARN this with your actual role ARN that has permissions to access S3
+        - name: AWS_WEB_IDENTITY_TOKEN_FILE
+          value: "/var/run/secrets/azure/tokens/azure-identity-token"
+      volumeMounts:
+        - name: azure-identity-token
+          mountPath: /var/run/secrets/azure/tokens
+          readOnly: true
+  volumes:
+    - name: azure-identity-token
+      projected:
+        sources:
+          - serviceAccountToken:
+              audience: api://AzureADTokenExchange
+              expirationSeconds: 3600
+              path: azure-identity-token
